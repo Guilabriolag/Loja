@@ -333,6 +333,7 @@
             <div id="categorias-list">
                 <input type="hidden" name="categoria" value="Lanches">
                 <input type="hidden" name="categoria" value="Bebidas">
+                <input type="hidden" name="categoria" value="Sobremesas">
             </div>
             
             <h3>Produtos</h3>
@@ -362,6 +363,9 @@
 
             const BIN_ID = '68d976ba43b1c97be95341d4';
             const MASTER_KEY = '$2a$10$tjnnaauKPcx3meNHOAbLnefskEWrEHoUCjB1Q0A2WdjUodgzxGpJG';
+
+            let products = [];
+            let deliveryAreas = [];
 
             // --- FUNÇÃO PARA CARREGAR OS DADOS DO SERVIDOR E POPULAR OS CAMPOS ---
             const loadDataAndPopulateForms = async () => {
@@ -418,9 +422,13 @@
                     document.getElementById('corPrecoCardapio').value = record.personalizacao.cores.precoCardapio || '#007bff';
                     document.getElementById('tamanhoFonte').value = record.personalizacao.estiloFonte.tamanhoFonte || '16';
 
-                    // Popular as listas dinâmicas de produtos e áreas de entrega
-                    populateProducts(record.cardapio.produtos);
-                    populateDeliveryAreas(record.cardapio.areasEntrega);
+                    // ATUALIZA OS ARRAYS GLOBAIS COM OS DADOS CARREGADOS
+                    products = record.cardapio.produtos || [];
+                    deliveryAreas = record.cardapio.areasEntrega || [];
+
+                    // Renderiza as listas dinâmicas com base nos arrays
+                    renderProducts();
+                    renderDeliveryAreas();
 
                 } catch (error) {
                     console.error('Falha ao carregar os dados salvos:', error);
@@ -428,86 +436,124 @@
                 }
             };
             
-            // --- FUNÇÕES AUXILIARES PARA POPULAR LISTAS DINÂMICAS ---
-            const createProductItem = (produto = {}) => {
-                const produtoDiv = document.createElement('div');
-                produtoDiv.classList.add('product-item');
-                
-                produtoDiv.innerHTML = `
-                    <h4>${produto.nome || 'Novo Produto'}</h4>
-                    <div class="form-group">
-                        <label>Nome</label>
-                        <input type="text" class="produto-nome" value="${produto.nome || ''}" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Descrição</label>
-                        <input type="text" class="produto-descricao" value="${produto.descricao || ''}">
-                    </div>
-                    <div class="form-group">
-                        <label>Preço</label>
-                        <input type="number" class="produto-preco" step="0.01" value="${produto.preco || ''}" required>
-                    </div>
-                    <div class="form-group">
-                        <label>URL da Imagem</label>
-                        <input type="url" class="produto-imagem" value="${produto.imagem || ''}">
-                    </div>
-                    <div class="form-group">
-                        <label>Categoria</label>
-                        <select class="produto-categoria">
-                            <option value="Lanches" ${produto.categoria === 'Lanches' ? 'selected' : ''}>Lanches</option>
-                            <option value="Bebidas" ${produto.categoria === 'Bebidas' ? 'selected' : ''}>Bebidas</option>
-                            <option value="Sobremesas" ${produto.categoria === 'Sobremesas' ? 'selected' : ''}>Sobremesas</option>
-                        </select>
-                    </div>
-                    <button type="button" class="btn btn-remove">Remover Produto</button>
-                `;
-                
-                produtosList.appendChild(produtoDiv);
-                
-                produtoDiv.querySelector('.btn-remove').addEventListener('click', () => {
-                    produtosList.removeChild(produtoDiv);
-                });
-            };
-
-            const populateProducts = (produtos) => {
+            // --- FUNÇÕES DE RENDERIZAÇÃO DE LISTAS DINÂMICAS ---
+            const renderProducts = () => {
                 produtosList.innerHTML = '';
-                if (produtos && Array.isArray(produtos)) {
-                    produtos.forEach(produto => createProductItem(produto));
-                }
+                products.forEach((product, index) => {
+                    const produtoDiv = document.createElement('div');
+                    produtoDiv.classList.add('product-item');
+                    
+                    produtoDiv.innerHTML = `
+                        <h4>${product.nome || 'Novo Produto'}</h4>
+                        <div class="form-group">
+                            <label>Nome</label>
+                            <input type="text" class="produto-nome" value="${product.nome || ''}" data-index="${index}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição</label>
+                            <input type="text" class="produto-descricao" value="${product.descricao || ''}" data-index="${index}">
+                        </div>
+                        <div class="form-group">
+                            <label>Preço</label>
+                            <input type="number" class="produto-preco" step="0.01" value="${product.preco || ''}" data-index="${index}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>URL da Imagem</label>
+                            <input type="url" class="produto-imagem" value="${product.imagem || ''}" data-index="${index}">
+                        </div>
+                        <div class="form-group">
+                            <label>Categoria</label>
+                            <select class="produto-categoria" data-index="${index}">
+                                <option value="Lanches" ${product.categoria === 'Lanches' ? 'selected' : ''}>Lanches</option>
+                                <option value="Bebidas" ${product.categoria === 'Bebidas' ? 'selected' : ''}>Bebidas</option>
+                                <option value="Sobremesas" ${product.categoria === 'Sobremesas' ? 'selected' : ''}>Sobremesas</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-remove" data-index="${index}">Remover Produto</button>
+                    `;
+                    
+                    produtosList.appendChild(produtoDiv);
+                });
+                attachProductEventListeners();
             };
 
-            const createAreaItem = (area = {}) => {
-                const areaDiv = document.createElement('div');
-                areaDiv.classList.add('area-item');
+            const renderDeliveryAreas = () => {
+                areasList.innerHTML = '';
+                deliveryAreas.forEach((area, index) => {
+                    const areaDiv = document.createElement('div');
+                    areaDiv.classList.add('area-item');
 
-                areaDiv.innerHTML = `
-                    <h4>${area.bairro || 'Nova Área de Entrega'}</h4>
-                    <div class="form-group">
-                        <label>Bairro</label>
-                        <input type="text" class="area-bairro" value="${area.bairro || ''}" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Preço (R$)</label>
-                        <input type="number" class="area-preco" step="0.01" value="${area.preco || ''}" required>
-                    </div>
-                    <button type="button" class="btn btn-remove">Remover Área</button>
-                `;
-                
-                areasList.appendChild(areaDiv);
-                
-                areaDiv.querySelector('.btn-remove').addEventListener('click', () => {
-                    areasList.removeChild(areaDiv);
+                    areaDiv.innerHTML = `
+                        <h4>${area.bairro || 'Nova Área de Entrega'}</h4>
+                        <div class="form-group">
+                            <label>Bairro</label>
+                            <input type="text" class="area-bairro" value="${area.bairro || ''}" data-index="${index}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Preço (R$)</label>
+                            <input type="number" class="area-preco" step="0.01" value="${area.preco || ''}" data-index="${index}" required>
+                        </div>
+                        <button type="button" class="btn btn-remove" data-index="${index}">Remover Área</button>
+                    `;
+                    areasList.appendChild(areaDiv);
+                });
+                attachAreaEventListeners();
+            };
+
+            // --- FUNÇÕES DE EVENTOS ---
+            const attachProductEventListeners = () => {
+                produtosList.querySelectorAll('.btn-remove').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.dataset.index;
+                        products.splice(index, 1);
+                        renderProducts(); // Renderiza a lista novamente
+                    });
+                });
+                produtosList.querySelectorAll('input, select').forEach(input => {
+                    input.addEventListener('change', (e) => {
+                        const index = e.target.dataset.index;
+                        const field = e.target.className.split('-')[1]; // Ex: 'nome', 'preco'
+                        if (field === 'preco') {
+                            products[index][field] = parseFloat(e.target.value);
+                        } else {
+                            products[index][field] = e.target.value;
+                        }
+                    });
                 });
             };
 
-            const populateDeliveryAreas = (areas) => {
-                areasList.innerHTML = '';
-                if (areas && Array.isArray(areas)) {
-                    areas.forEach(area => createAreaItem(area));
-                }
+            const attachAreaEventListeners = () => {
+                areasList.querySelectorAll('.btn-remove').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.dataset.index;
+                        deliveryAreas.splice(index, 1);
+                        renderDeliveryAreas(); // Renderiza a lista novamente
+                    });
+                });
+                areasList.querySelectorAll('input').forEach(input => {
+                    input.addEventListener('change', (e) => {
+                        const index = e.target.dataset.index;
+                        const field = e.target.className.split('-')[1]; // Ex: 'bairro', 'preco'
+                        if (field === 'preco') {
+                            deliveryAreas[index][field] = parseFloat(e.target.value);
+                        } else {
+                            deliveryAreas[index][field] = e.target.value;
+                        }
+                    });
+                });
             };
+            
+            // --- LÓGICA DE ADICIONAR NOVOS ITENS ---
+            addProdutoBtn.addEventListener('click', () => {
+                products.push({ nome: '', descricao: '', preco: 0, imagem: '', categoria: 'Lanches' });
+                renderProducts();
+            });
+            addAreaBtn.addEventListener('click', () => {
+                deliveryAreas.push({ bairro: '', preco: 0 });
+                renderDeliveryAreas();
+            });
 
-            // --- LÓGICA DE EVENTOS ---
+            // --- LÓGICA DE LOGIN E PUBLICAÇÃO ---
             loginForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const username = document.getElementById('username').value;
@@ -522,12 +568,10 @@
                 }
             });
 
-            addProdutoBtn.addEventListener('click', () => createProductItem());
-            addAreaBtn.addEventListener('click', () => createAreaItem());
-
             publishBtn.addEventListener('click', () => {
                 const dadosFinais = {};
                 
+                // Coleta dados dos formulários estáticos
                 dadosFinais.loja = {
                     nome: document.getElementById('nomeLoja').value,
                     slogan: document.getElementById('slogan').value,
@@ -544,6 +588,7 @@
                     }
                 };
                 
+                // ... (coleta de outros formulários estáticos)
                 dadosFinais.admin = {
                     nome: document.getElementById('adminNome').value,
                     email: document.getElementById('adminEmail').value,
@@ -580,32 +625,12 @@
                         tamanhoFonte: document.getElementById('tamanhoFonte').value
                     }
                 };
-                
-                const produtos = [];
-                document.querySelectorAll('.product-item').forEach(item => {
-                    const produto = {
-                        nome: item.querySelector('.produto-nome').value,
-                        descricao: item.querySelector('.produto-descricao').value,
-                        preco: parseFloat(item.querySelector('.produto-preco').value),
-                        imagem: item.querySelector('.produto-imagem').value,
-                        categoria: item.querySelector('.produto-categoria').value
-                    };
-                    produtos.push(produto);
-                });
 
-                const areasEntrega = [];
-                document.querySelectorAll('.area-item').forEach(item => {
-                    const area = {
-                        bairro: item.querySelector('.area-bairro').value,
-                        preco: parseFloat(item.querySelector('.area-preco').value)
-                    };
-                    areasEntrega.push(area);
-                });
-                
+                // USA OS ARRAYS GLOBAIS COMO DADOS FINAIS
                 dadosFinais.cardapio = {
                     categorias: ["Lanches", "Bebidas", "Sobremesas"],
-                    produtos: produtos,
-                    areasEntrega: areasEntrega
+                    produtos: products,
+                    areasEntrega: deliveryAreas
                 };
                 
                 const url = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
