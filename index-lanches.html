@@ -434,6 +434,10 @@
             const finalTotalPickupDisplay = document.getElementById('final-total-pickup');
             const loadingMessage = document.getElementById('loading-message');
 
+            // CHAVES DE ACESSO - SUBSTITUA SE NECESSÁRIO
+            const BIN_ID = '68d976ba43b1c97be95341d4';
+            const MASTER_KEY = '$2a$10$tjnnaauKPcx3meNHOAbLnefskEWrEHoUCjB1QoA2WdjUodgzxGpJG';
+
             // --- Lógica do Modal e Navegação
             const views = {
                 cart: document.getElementById('cart-view'),
@@ -489,9 +493,6 @@
 
             // --- Lógica de Carregamento de Dados e Produtos
             const loadStoreData = async () => {
-                const BIN_ID = '68d976ba43b1c97be95341d4';
-                const MASTER_KEY = '$2a$10$tjnnaauKPcx3meNHOAbLnefskEWrEHoUCjB1Q0A2WdjUodgzxGpJG';
-
                 try {
                     const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
                         headers: {
