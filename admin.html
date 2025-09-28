@@ -318,7 +318,7 @@
         <div class="section" id="area-cobertura-section">
             <h2>Áreas de Cobertura</h2>
             <div id="areas-list">
-                </div>
+            </div>
             <button type="button" id="add-area" class="btn">Adicionar Área de Entrega</button>
         </div>
         
@@ -333,7 +333,7 @@
             
             <h3>Produtos</h3>
             <div id="produtos-list">
-                </div>
+            </div>
             <button type="button" id="add-produto" class="btn">Adicionar Produto</button>
         </div>
         
@@ -356,7 +356,6 @@
             const areasList = document.getElementById('areas-list');
             const addAreaBtn = document.getElementById('add-area');
 
-            // --- Lógica de Login
             loginForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const username = document.getElementById('username').value;
@@ -370,7 +369,6 @@
                 }
             });
 
-            // --- Lógica de Adicionar Produtos Dinamicamente
             addProdutoBtn.addEventListener('click', () => {
                 const produtoDiv = document.createElement('div');
                 produtoDiv.classList.add('product-item');
@@ -411,7 +409,6 @@
                 });
             });
 
-            // --- Lógica de Adicionar Áreas de Entrega Dinamicamente
             addAreaBtn.addEventListener('click', () => {
                 const areaDiv = document.createElement('div');
                 areaDiv.classList.add('area-item');
@@ -436,11 +433,9 @@
                 });
             });
 
-            // --- Lógica para Gerar e Baixar o arquivo JSON
             publishBtn.addEventListener('click', () => {
                 const dadosFinais = {};
                 
-                // 1. Coletar dados da loja
                 dadosFinais.loja = {
                     nome: document.getElementById('nomeLoja').value,
                     slogan: document.getElementById('slogan').value,
@@ -456,7 +451,6 @@
                     }
                 };
                 
-                // 2. Coletar dados do administrador
                 dadosFinais.admin = {
                     nome: document.getElementById('adminNome').value,
                     email: document.getElementById('adminEmail').value,
@@ -464,7 +458,6 @@
                     biografia: document.getElementById('biografia').value
                 };
                 
-                // 3. Coletar dados comerciais
                 dadosFinais.infoComercial = {
                     cnpjCpf: document.getElementById('cnpjCpf').value,
                     siteExterno: document.getElementById('siteExterno').value,
@@ -480,7 +473,6 @@
                     }
                 };
 
-                // 4. Coletar dados de personalização avançada
                 dadosFinais.personalizacao = {
                     fonteSite: document.getElementById('fonteSite').value,
                     layoutCardapio: document.getElementById('layoutCardapio').value,
@@ -496,7 +488,6 @@
                     }
                 };
                 
-                // 5. Coletar dados dos produtos dinâmicos
                 const produtos = [];
                 const produtoItens = document.querySelectorAll('.product-item');
                 
@@ -511,7 +502,6 @@
                     produtos.push(produto);
                 });
 
-                // 6. Coletar dados das áreas de entrega dinâmicas
                 const areasEntrega = [];
                 const areaItens = document.querySelectorAll('.area-item');
 
@@ -529,7 +519,6 @@
                     areasEntrega: areasEntrega
                 };
 
-                // 7. Converter para JSON e iniciar o download
                 const jsonContent = JSON.stringify(dadosFinais, null, 2);
                 const blob = new Blob([jsonContent], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
@@ -549,4 +538,4 @@
         });
     </script>
 </body>
-</html>
+                            </html>
