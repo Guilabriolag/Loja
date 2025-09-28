@@ -343,8 +343,8 @@
         
         <div class="section" id="publish-section">
             <h2>Publicar</h2>
-            <p>Clique no botão abaixo para gerar e baixar o arquivo `dados-loja.json` com todas as suas informações.</p>
-            <button type="button" id="publish-btn" class="btn">Gerar e Baixar JSON</button>
+            <p>Clique no botão abaixo para salvar e atualizar seu cardápio online.</p>
+            <button type="button" id="publish-btn" class="btn">Salvar Alterações</button>
         </div>
         
     </div>
@@ -360,47 +360,103 @@
             const areasList = document.getElementById('areas-list');
             const addAreaBtn = document.getElementById('add-area');
 
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
+            const BIN_ID = '68d976ba43b1c97be95341d4';
+            const MASTER_KEY = '$2a$10$tjnnaauKPcx3meNHOAbLnefskEWrEHoUCjB1Q0A2WdjUodgzxGpJG';
 
-                if (username === 'Lanches' && password === '1234') {
-                    loginScreen.classList.add('hidden');
-                    adminPanel.classList.remove('hidden');
-                } else {
-                    alert('Usuário ou senha incorretos.');
+            // --- FUNÇÃO PARA CARREGAR OS DADOS DO SERVIDOR E POPULAR OS CAMPOS ---
+            const loadDataAndPopulateForms = async () => {
+                try {
+                    const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                        headers: {
+                            'X-Master-Key': MASTER_KEY
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`Erro ao carregar dados: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    const record = data.record;
+                    
+                    // Preencher os campos de configuração da loja
+                    document.getElementById('nomeLoja').value = record.loja.nome || '';
+                    document.getElementById('slogan').value = record.loja.slogan || '';
+                    document.getElementById('whatsapp').value = record.loja.whatsapp || '';
+                    document.getElementById('chavePix').value = record.loja.chavePix || '';
+                    document.getElementById('logoUrl').value = record.loja.logo || '';
+                    document.getElementById('fundoUrl').value = record.loja.fundo || '';
+                    document.getElementById('corPrimaria').value = record.loja.cores.primaria || '#007bff';
+                    document.getElementById('corSecundaria').value = record.loja.cores.secundaria || '#6c757d';
+                    document.getElementById('horarioFuncionamento').value = record.loja.horario || '';
+                    document.getElementById('formasPagamento').value = (record.loja.formasPagamento || []).join('\n');
+                    document.getElementById('sobreLoja').value = record.loja.sobreLoja || '';
+
+                    // Preencher os campos do perfil do admin
+                    document.getElementById('adminNome').value = record.admin.nome || '';
+                    document.getElementById('adminEmail').value = record.admin.email || '';
+                    document.getElementById('adminFoto').value = record.admin.foto || '';
+                    document.getElementById('biografia').value = record.admin.biografia || '';
+
+                    // Preencher os campos de informações comerciais
+                    document.getElementById('cnpjCpf').value = record.infoComercial.cnpjCpf || '';
+                    document.getElementById('uf').value = record.infoComercial.endereco.uf || '';
+                    document.getElementById('cidade').value = record.infoComercial.endereco.cidade || '';
+                    document.getElementById('bairro').value = record.infoComercial.endereco.bairro || '';
+                    document.getElementById('siteExterno').value = record.infoComercial.siteExterno || '';
+                    document.getElementById('instagramUrl').value = record.infoComercial.redesSociais.instagram || '';
+                    document.getElementById('facebookUrl').value = record.infoComercial.redesSociais.facebook || '';
+                    document.getElementById('tiktokUrl').value = record.infoComercial.redesSociais.tiktok || '';
+                    
+                    // Preencher os campos de personalização
+                    document.getElementById('fonteSite').value = record.personalizacao.fonteSite || 'Arial';
+                    document.getElementById('layoutCardapio').value = record.personalizacao.layoutCardapio || 'grade';
+                    document.getElementById('estiloBotoes').value = record.personalizacao.estiloBotoes || 'arredondado';
+                    document.getElementById('iconeCarrinho').value = record.personalizacao.iconeCarrinho || '';
+                    document.getElementById('corFundoCardapio').value = record.personalizacao.cores.fundoCardapio || '#ffffff';
+                    document.getElementById('corTextoCardapio').value = record.personalizacao.cores.textoCardapio || '#333333';
+                    document.getElementById('corPrecoCardapio').value = record.personalizacao.cores.precoCardapio || '#007bff';
+                    document.getElementById('tamanhoFonte').value = record.personalizacao.estiloFonte.tamanhoFonte || '16';
+
+                    // Popular as listas dinâmicas de produtos e áreas de entrega
+                    populateProducts(record.cardapio.produtos);
+                    populateDeliveryAreas(record.cardapio.areasEntrega);
+
+                } catch (error) {
+                    console.error('Falha ao carregar os dados salvos:', error);
+                    alert('Não foi possível carregar os dados salvos. Comece com um formulário vazio.');
                 }
-            });
-
-            addProdutoBtn.addEventListener('click', () => {
+            };
+            
+            // --- FUNÇÕES AUXILIARES PARA POPULAR LISTAS DINÂMICAS ---
+            const createProductItem = (produto = {}) => {
                 const produtoDiv = document.createElement('div');
                 produtoDiv.classList.add('product-item');
                 
                 produtoDiv.innerHTML = `
-                    <h4>Novo Produto</h4>
+                    <h4>${produto.nome || 'Novo Produto'}</h4>
                     <div class="form-group">
                         <label>Nome</label>
-                        <input type="text" class="produto-nome" required>
+                        <input type="text" class="produto-nome" value="${produto.nome || ''}" required>
                     </div>
                     <div class="form-group">
                         <label>Descrição</label>
-                        <input type="text" class="produto-descricao">
+                        <input type="text" class="produto-descricao" value="${produto.descricao || ''}">
                     </div>
                     <div class="form-group">
                         <label>Preço</label>
-                        <input type="number" class="produto-preco" step="0.01" required>
+                        <input type="number" class="produto-preco" step="0.01" value="${produto.preco || ''}" required>
                     </div>
                     <div class="form-group">
                         <label>URL da Imagem</label>
-                        <input type="url" class="produto-imagem">
+                        <input type="url" class="produto-imagem" value="${produto.imagem || ''}">
                     </div>
                     <div class="form-group">
                         <label>Categoria</label>
                         <select class="produto-categoria">
-                            <option value="Lanches">Lanches</option>
-                            <option value="Bebidas">Bebidas</option>
-                            <option value="Sobremesas">Sobremesas</option>
+                            <option value="Lanches" ${produto.categoria === 'Lanches' ? 'selected' : ''}>Lanches</option>
+                            <option value="Bebidas" ${produto.categoria === 'Bebidas' ? 'selected' : ''}>Bebidas</option>
+                            <option value="Sobremesas" ${produto.categoria === 'Sobremesas' ? 'selected' : ''}>Sobremesas</option>
                         </select>
                     </div>
                     <button type="button" class="btn btn-remove">Remover Produto</button>
@@ -411,21 +467,28 @@
                 produtoDiv.querySelector('.btn-remove').addEventListener('click', () => {
                     produtosList.removeChild(produtoDiv);
                 });
-            });
+            };
 
-            addAreaBtn.addEventListener('click', () => {
+            const populateProducts = (produtos) => {
+                produtosList.innerHTML = '';
+                if (produtos && Array.isArray(produtos)) {
+                    produtos.forEach(produto => createProductItem(produto));
+                }
+            };
+
+            const createAreaItem = (area = {}) => {
                 const areaDiv = document.createElement('div');
                 areaDiv.classList.add('area-item');
 
                 areaDiv.innerHTML = `
-                    <h4>Nova Área de Entrega</h4>
+                    <h4>${area.bairro || 'Nova Área de Entrega'}</h4>
                     <div class="form-group">
                         <label>Bairro</label>
-                        <input type="text" class="area-bairro" required>
+                        <input type="text" class="area-bairro" value="${area.bairro || ''}" required>
                     </div>
                     <div class="form-group">
                         <label>Preço (R$)</label>
-                        <input type="number" class="area-preco" step="0.01" required>
+                        <input type="number" class="area-preco" step="0.01" value="${area.preco || ''}" required>
                     </div>
                     <button type="button" class="btn btn-remove">Remover Área</button>
                 `;
@@ -435,7 +498,32 @@
                 areaDiv.querySelector('.btn-remove').addEventListener('click', () => {
                     areasList.removeChild(areaDiv);
                 });
+            };
+
+            const populateDeliveryAreas = (areas) => {
+                areasList.innerHTML = '';
+                if (areas && Array.isArray(areas)) {
+                    areas.forEach(area => createAreaItem(area));
+                }
+            };
+
+            // --- LÓGICA DE EVENTOS ---
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                if (username === 'Lanches' && password === '1234') {
+                    loginScreen.classList.add('hidden');
+                    adminPanel.classList.remove('hidden');
+                    loadDataAndPopulateForms();
+                } else {
+                    alert('Usuário ou senha incorretos.');
+                }
             });
+
+            addProdutoBtn.addEventListener('click', () => createProductItem());
+            addAreaBtn.addEventListener('click', () => createAreaItem());
 
             publishBtn.addEventListener('click', () => {
                 const dadosFinais = {};
@@ -446,9 +534,9 @@
                     logo: document.getElementById('logoUrl').value,
                     fundo: document.getElementById('fundoUrl').value,
                     whatsapp: document.getElementById('whatsapp').value,
-                    chavePix: document.getElementById('chavePix').value, // <-- NOVO CAMPO
+                    chavePix: document.getElementById('chavePix').value,
                     horario: document.getElementById('horarioFuncionamento').value,
-                    formasPagamento: document.getElementById('formasPagamento').value.split('\n'),
+                    formasPagamento: document.getElementById('formasPagamento').value.split('\n').filter(p => p.trim() !== ''),
                     sobreLoja: document.getElementById('sobreLoja').value,
                     cores: {
                         primaria: document.getElementById('corPrimaria').value,
@@ -494,9 +582,7 @@
                 };
                 
                 const produtos = [];
-                const produtoItens = document.querySelectorAll('.product-item');
-                
-                produtoItens.forEach(item => {
+                document.querySelectorAll('.product-item').forEach(item => {
                     const produto = {
                         nome: item.querySelector('.produto-nome').value,
                         descricao: item.querySelector('.produto-descricao').value,
@@ -508,9 +594,7 @@
                 });
 
                 const areasEntrega = [];
-                const areaItens = document.querySelectorAll('.area-item');
-
-                areaItens.forEach(item => {
+                document.querySelectorAll('.area-item').forEach(item => {
                     const area = {
                         bairro: item.querySelector('.area-bairro').value,
                         preco: parseFloat(item.querySelector('.area-preco').value)
@@ -523,9 +607,6 @@
                     produtos: produtos,
                     areasEntrega: areasEntrega
                 };
-
-                const BIN_ID = '68d976ba43b1c97be95341d4';
-                const MASTER_KEY = '$2a$10$tjnnaauKPcx3meNHOAbLnefskEWrEHoUCjB1Q0A2WdjUodgzxGpJG';
                 
                 const url = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
                 
@@ -546,11 +627,11 @@
                     return response.json();
                 })
                 .then(data => {
-                    alert('Dados da loja publicados com sucesso!');
-                    console.log('Publicado com sucesso:', data);
+                    alert('Dados da loja salvos com sucesso!');
+                    console.log('Salvo com sucesso:', data);
                 })
                 .catch(error => {
-                    alert(`Falha ao publicar os dados: ${error.message}.`);
+                    alert(`Falha ao salvar os dados: ${error.message}.`);
                     console.error('Erro:', error);
                 });
             });
