@@ -174,6 +174,10 @@
                     <input type="text" id="whatsapp" name="whatsapp">
                 </div>
                 <div class="form-group">
+                    <label for="chavePix">Chave PIX da Loja</label>
+                    <input type="text" id="chavePix" name="chavePix">
+                </div>
+                <div class="form-group">
                     <label for="logoUrl">Logo (URL)</label>
                     <input type="url" id="logoUrl" name="logoUrl">
                 </div>
@@ -361,7 +365,6 @@
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
 
-                // --- NOVA SENHA ---
                 if (username === 'Lanches' && password === '1234') {
                     loginScreen.classList.add('hidden');
                     adminPanel.classList.remove('hidden');
@@ -443,6 +446,7 @@
                     logo: document.getElementById('logoUrl').value,
                     fundo: document.getElementById('fundoUrl').value,
                     whatsapp: document.getElementById('whatsapp').value,
+                    chavePix: document.getElementById('chavePix').value, // <-- NOVO CAMPO
                     horario: document.getElementById('horarioFuncionamento').value,
                     formasPagamento: document.getElementById('formasPagamento').value.split('\n'),
                     sobreLoja: document.getElementById('sobreLoja').value,
@@ -520,7 +524,6 @@
                     areasEntrega: areasEntrega
                 };
 
-                // --- DADOS DO SEU BIN ---
                 const BIN_ID = '68d976ba43b1c97be95341d4';
                 const MASTER_KEY = '$2a$10$tjnnaauKPcx3meNHOAbLnefskEWrEHoUCjB1Q0A2WdjUodgzxGpJG';
                 
