@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração - Cardápio Digital</title>
+    <style>
+        :root {
+            --cor-primaria: #007bff;
+            --cor-secundaria: #6c757d;
+            --cor-fundo: #f4f7f6;
+            --cor-texto: #333;
+            --sombra-leve: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: var(--sombra-leve);
+            padding: 20px;
+        }
+
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        #login-form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: var(--sombra-leve);
+            text-align: center;
+        }
+        
+        #login-form h1 {
+            color: var(--cor-primaria);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .form-group input[type="color"] {
+            padding: 0;
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .btn {
+            background-color: var(--cor-primaria);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-secondary {
+            background-color: var(--cor-secundaria);
+        }
+        
+        .btn-remove {
+            background-color: #dc3545;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-remove:hover {
+            background-color: #c82333;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #admin-panel h2 {
+            border-bottom: 2px solid var(--cor-primaria);
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        #admin-panel .section {
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: #fafafa;
+        }
+
+        .product-item, .category-item, .area-item {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+
+        .area-item .form-group {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <form id="login-form">
+            <h1>Acesso Administrativo</h1>
+            <div class="form-group">
+                <label for="username">Usuário</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Entrar</button>
+        </form>
+    </div>
+
+    <div id="admin-panel" class="container hidden">
+        <h1>Painel de Gerenciamento</h1>
+        
+        <div class="section" id="loja-section">
+            <h2>Configurações da Loja</h2>
+            <form id="loja-config-form">
+                <div class="form-group">
+                    <label for="nomeLoja">Nome da Loja</label>
+                    <input type="text" id="nomeLoja" name="nomeLoja">
+                </div>
+                <div class="form-group">
+                    <label for="slogan">Slogan</label>
+                    <input type="text" id="slogan" name="slogan">
+                </div>
+                <div class="form-group">
+                    <label for="whatsapp">WhatsApp da Loja</label>
+                    <input type="text" id="whatsapp" name="whatsapp">
+                </div>
+                <div class="form-group">
+                    <label for="logoUrl">Logo (URL)</label>
+                    <input type="url" id="logoUrl" name="logoUrl">
+                </div>
+                <div class="form-group">
+                    <label for="fundoUrl">Fundo (URL ou Cor)</label>
+                    <input type="text" id="fundoUrl" name="fundoUrl">
+                </div>
+                <div class="form-group">
+                    <label for="corPrimaria">Cor Primária</label>
+                    <input type="color" id="corPrimaria" name="corPrimaria" value="#007bff">
+                </div>
+                <div class="form-group">
+                    <label for="corSecundaria">Cor Secundária</label>
+                    <input type="color" id="corSecundaria" name="corSecundaria" value="#6c757d">
+                </div>
+                <div class="form-group">
+                    <label for="horarioFuncionamento">Horário de Funcionamento</label>
+                    <textarea id="horarioFuncionamento" name="horarioFuncionamento" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="formasPagamento">Formas de Pagamento Aceitas</label>
+                    <textarea id="formasPagamento" name="formasPagamento" rows="3" placeholder="Ex: Cartão, Dinheiro, PIX"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="sobreLoja">Sobre a Loja</label>
+                    <textarea id="sobreLoja" name="sobreLoja" rows="5"></textarea>
+                </div>
+            </form>
+        </div>
+        
+        <div class="section" id="admin-profile-section">
+            <h2>Perfil do Administrador</h2>
+            <form id="admin-profile-form">
+                <div class="form-group">
+                    <label for="adminNome">Nome Completo</label>
+                    <input type="text" id="adminNome" name="adminNome">
+                </div>
+                <div class="form-group">
+                    <label for="adminEmail">E-mail</label>
+                    <input type="email" id="adminEmail" name="adminEmail">
+                </div>
+                <div class="form-group">
+                    <label for="adminFoto">URL da Foto de Perfil</label>
+                    <input type="url" id="adminFoto" name="adminFoto">
+                </div>
+                <div class="form-group">
+                    <label for="biografia">Biografia</label>
+                    <textarea id="biografia" name="biografia" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+
+        <div class="section" id="info-comercial-section">
+            <h2>Informações Comerciais</h2>
+            <form id="info-comercial-form">
+                <div class="form-group">
+                    <label for="cnpjCpf">CNPJ ou CPF</label>
+                    <input type="text" id="cnpjCpf" name="cnpjCpf">
+                </div>
+                <div class="form-group">
+                    <label for="uf">Endereço: UF</label>
+                    <input type="text" id="uf" name="uf">
+                </div>
+                <div class="form-group">
+                    <label for="cidade">Endereço: Cidade</label>
+                    <input type="text" id="cidade" name="cidade">
+                </div>
+                <div class="form-group">
+                    <label for="bairro">Endereço: Bairro</label>
+                    <input type="text" id="bairro" name="bairro">
+                </div>
+                <div class="form-group">
+                    <label for="siteExterno">Site Externo (URL)</label>
+                    <input type="url" id="siteExterno" name="siteExterno">
+                </div>
+                <div class="form-group">
+                    <label for="instagramUrl">Instagram (URL)</label>
+                    <input type="url" id="instagramUrl" name="instagramUrl">
+                </div>
+                <div class="form-group">
+                    <label for="facebookUrl">Facebook (URL)</label>
+                    <input type="url" id="facebookUrl" name="facebookUrl">
+                </div>
+                <div class="form-group">
+                    <label for="tiktokUrl">TikTok (URL)</label>
+                    <input type="url" id="tiktokUrl" name="tiktokUrl">
+                </div>
+            </form>
+        </div>
+
+        <div class="section" id="personalizacao-avancada-section">
+            <h2>Personalização Avançada</h2>
+            <form id="personalizacao-avancada-form">
+                <div class="form-group">
+                    <label for="fonteSite">Fonte do Site</label>
+                    <select id="fonteSite" name="fonteSite">
+                        <option value="Arial">Arial</option>
+                        <option value="Roboto">Roboto</option>
+                        <option value="Open Sans">Open Sans</option>
+                        <option value="Montserrat">Montserrat</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="layoutCardapio">Layout do Cardápio</label>
+                    <select id="layoutCardapio" name="layoutCardapio">
+                        <option value="grade">Grade</option>
+                        <option value="lista">Lista</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="estiloBotoes">Estilo dos Botões</label>
+                    <select id="estiloBotoes" name="estiloBotoes">
+                        <option value="arredondado">Arredondado</option>
+                        <option value="quadrado">Quadrado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="iconeCarrinho">Ícone do Carrinho (URL)</label>
+                    <input type="url" id="iconeCarrinho" name="iconeCarrinho">
+                </div>
+                <h3>Cores do Cardápio</h3>
+                <div class="form-group">
+                    <label for="corFundoCardapio">Cor de Fundo do Cardapio</label>
+                    <input type="color" id="corFundoCardapio" name="corFundoCardapio" value="#ffffff">
+                </div>
+                <div class="form-group">
+                    <label for="corTextoCardapio">Cor do Texto do Cardapio</label>
+                    <input type="color" id="corTextoCardapio" name="corTextoCardapio" value="#333333">
+                </div>
+                <div class="form-group">
+                    <label for="corPrecoCardapio">Cor do Preço</label>
+                    <input type="color" id="corPrecoCardapio" name="corPrecoCardapio" value="#007bff">
+                </div>
+                <h3>Estilo da Fonte</h3>
+                <div class="form-group">
+                    <label for="tamanhoFonte">Tamanho da Fonte (px)</label>
+                    <input type="number" id="tamanhoFonte" name="tamanhoFonte" value="16" min="10" max="24">
+                </div>
+            </form>
+        </div>
+
+        <div class="section" id="area-cobertura-section">
+            <h2>Áreas de Cobertura</h2>
+            <div id="areas-list">
+            </div>
+            <button type="button" id="add-area" class="btn">Adicionar Área de Entrega</button>
+        </div>
+        
+        <div class="section" id="cardapio-section">
+            <h2>Cardápio</h2>
+            <h3>Categorias</h3>
+            <p>Em breve, a gestão de categorias será dinâmica.</p>
+            <div id="categorias-list">
+                <input type="hidden" name="categoria" value="Lanches">
+                <input type="hidden" name="categoria" value="Bebidas">
+            </div>
+            
+            <h3>Produtos</h3>
+            <div id="produtos-list">
+            </div>
+            <button type="button" id="add-produto" class="btn">Adicionar Produto</button>
+        </div>
+        
+        <div class="section" id="publish-section">
+            <h2>Publicar</h2>
+            <p>Clique no botão abaixo para gerar e baixar o arquivo `dados-loja.json` com todas as suas informações.</p>
+            <button type="button" id="publish-btn" class="btn">Gerar e Baixar JSON</button>
+        </div>
+        
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const loginScreen = document.getElementById('login-screen');
+            const adminPanel = document.getElementById('admin-panel');
+            const publishBtn = document.getElementById('publish-btn');
+            const produtosList = document.getElementById('produtos-list');
+            const addProdutoBtn = document.getElementById('add-produto');
+            const areasList = document.getElementById('areas-list');
+            const addAreaBtn = document.getElementById('add-area');
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                // --- NOVA SENHA ---
+                if (username === 'Lanches' && password === '1234') {
+                    loginScreen.classList.add('hidden');
+                    adminPanel.classList.remove('hidden');
+                } else {
+                    alert('Usuário ou senha incorretos.');
+                }
+            });
+
+            addProdutoBtn.addEventListener('click', () => {
+                const produtoDiv = document.createElement('div');
+                produtoDiv.classList.add('product-item');
+                
+                produtoDiv.innerHTML = `
+                    <h4>Novo Produto</h4>
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" class="produto-nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <input type="text" class="produto-descricao">
+                    </div>
+                    <div class="form-group">
+                        <label>Preço</label>
+                        <input type="number" class="produto-preco" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>URL da Imagem</label>
+                        <input type="url" class="produto-imagem">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select class="produto-categoria">
+                            <option value="Lanches">Lanches</option>
+                            <option value="Bebidas">Bebidas</option>
+                            <option value="Sobremesas">Sobremesas</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-remove">Remover Produto</button>
+                `;
+                
+                produtosList.appendChild(produtoDiv);
+                
+                produtoDiv.querySelector('.btn-remove').addEventListener('click', () => {
+                    produtosList.removeChild(produtoDiv);
+                });
+            });
+
+            addAreaBtn.addEventListener('click', () => {
+                const areaDiv = document.createElement('div');
+                areaDiv.classList.add('area-item');
+
+                areaDiv.innerHTML = `
+                    <h4>Nova Área de Entrega</h4>
+                    <div class="form-group">
+                        <label>Bairro</label>
+                        <input type="text" class="area-bairro" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Preço (R$)</label>
+                        <input type="number" class="area-preco" step="0.01" required>
+                    </div>
+                    <button type="button" class="btn btn-remove">Remover Área</button>
+                `;
+                
+                areasList.appendChild(areaDiv);
+                
+                areaDiv.querySelector('.btn-remove').addEventListener('click', () => {
+                    areasList.removeChild(areaDiv);
+                });
+            });
+
+            publishBtn.addEventListener('click', () => {
+                const dadosFinais = {};
+                
+                dadosFinais.loja = {
+                    nome: document.getElementById('nomeLoja').value,
+                    slogan: document.getElementById('slogan').value,
+                    logo: document.getElementById('logoUrl').value,
+                    fundo: document.getElementById('fundoUrl').value,
+                    whatsapp: document.getElementById('whatsapp').value,
+                    horario: document.getElementById('horarioFuncionamento').value,
+                    formasPagamento: document.getElementById('formasPagamento').value.split('\n'),
+                    sobreLoja: document.getElementById('sobreLoja').value,
+                    cores: {
+                        primaria: document.getElementById('corPrimaria').value,
+                        secundaria: document.getElementById('corSecundaria').value
+                    }
+                };
+                
+                dadosFinais.admin = {
+                    nome: document.getElementById('adminNome').value,
+                    email: document.getElementById('adminEmail').value,
+                    foto: document.getElementById('adminFoto').value,
+                    biografia: document.getElementById('biografia').value
+                };
+                
+                dadosFinais.infoComercial = {
+                    cnpjCpf: document.getElementById('cnpjCpf').value,
+                    siteExterno: document.getElementById('siteExterno').value,
+                    endereco: {
+                        uf: document.getElementById('uf').value,
+                        cidade: document.getElementById('cidade').value,
+                        bairro: document.getElementById('bairro').value
+                    },
+                    redesSociais: {
+                        instagram: document.getElementById('instagramUrl').value,
+                        facebook: document.getElementById('facebookUrl').value,
+                        tiktok: document.getElementById('tiktokUrl').value
+                    }
+                };
+
+                dadosFinais.personalizacao = {
+                    fonteSite: document.getElementById('fonteSite').value,
+                    layoutCardapio: document.getElementById('layoutCardapio').value,
+                    estiloBotoes: document.getElementById('estiloBotoes').value,
+                    iconeCarrinho: document.getElementById('iconeCarrinho').value,
+                    cores: {
+                        fundoCardapio: document.getElementById('corFundoCardapio').value,
+                        textoCardapio: document.getElementById('corTextoCardapio').value,
+                        precoCardapio: document.getElementById('corPrecoCardapio').value
+                    },
+                    estiloFonte: {
+                        tamanhoFonte: document.getElementById('tamanhoFonte').value
+                    }
+                };
+                
+                const produtos = [];
+                const produtoItens = document.querySelectorAll('.product-item');
+                
+                produtoItens.forEach(item => {
+                    const produto = {
+                        nome: item.querySelector('.produto-nome').value,
+                        descricao: item.querySelector('.produto-descricao').value,
+                        preco: parseFloat(item.querySelector('.produto-preco').value),
+                        imagem: item.querySelector('.produto-imagem').value,
+                        categoria: item.querySelector('.produto-categoria').value
+                    };
+                    produtos.push(produto);
+                });
+
+                const areasEntrega = [];
+                const areaItens = document.querySelectorAll('.area-item');
+
+                areaItens.forEach(item => {
+                    const area = {
+                        bairro: item.querySelector('.area-bairro').value,
+                        preco: parseFloat(item.querySelector('.area-preco').value)
+                    };
+                    areasEntrega.push(area);
+                });
+                
+                dadosFinais.cardapio = {
+                    categorias: ["Lanches", "Bebidas", "Sobremesas"],
+                    produtos: produtos,
+                    areasEntrega: areasEntrega
+                };
+
+                // --- DADOS DO SEU BIN ---
+                const BIN_ID = '68d976ba43b1c97be95341d4';
+                const MASTER_KEY = '$2a$10$tjnnaauKPcx3meNHOAbLnefskEWrEHoUCjB1Q0A2WdjUodgzxGpJG';
+                
+                const url = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+                
+                fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': MASTER_KEY
+                    },
+                    body: JSON.stringify(dadosFinais, null, 2)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(error => {
+                            throw new Error(`Erro na API: ${error.message}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('Dados da loja publicados com sucesso!');
+                    console.log('Publicado com sucesso:', data);
+                })
+                .catch(error => {
+                    alert(`Falha ao publicar os dados: ${error.message}.`);
+                    console.error('Erro:', error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
