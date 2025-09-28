@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração - Pizzaria</title>
+    <style>
+        :root {
+            --cor-primaria: #ff4500; /* Laranja da Pizza */
+            --cor-secundaria: #6c757d;
+            --cor-fundo: #f4f7f6;
+            --cor-texto: #333;
+            --sombra-leve: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: var(--sombra-leve);
+            padding: 20px;
+        }
+
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        #login-form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: var(--sombra-leve);
+            text-align: center;
+        }
+        
+        #login-form h1 {
+            color: var(--cor-primaria);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .form-group input[type="color"] {
+            padding: 0;
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .btn {
+            background-color: var(--cor-primaria);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-secondary {
+            background-color: var(--cor-secundaria);
+        }
+        
+        .btn-remove {
+            background-color: #dc3545;
+        }
+
+        .btn:hover {
+            background-color: #cc3700;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-remove:hover {
+            background-color: #c82333;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #admin-panel h2 {
+            border-bottom: 2px solid var(--cor-primaria);
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        #admin-panel .section {
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: #fafafa;
+        }
+
+        .product-item, .category-item, .area-item {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .category-item {
+            justify-content: flex-start;
+            gap: 10px;
+        }
+        
+        .category-item input {
+            flex-grow: 1;
+        }
+
+        .area-item .form-group {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <form id="login-form">
+            <h1>Acesso Administrativo</h1>
+            <div class="form-group">
+                <label for="username">Usuário</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Entrar</button>
+        </form>
+    </div>
+
+    <div id="admin-panel" class="container hidden">
+        <h1>Painel de Gerenciamento da Pizzaria</h1>
+        
+        <div class="section" id="loja-section">
+            <h2>Configurações da Loja</h2>
+            <form id="loja-config-form">
+                <div class="form-group">
+                    <label for="nomeLoja">Nome da Loja</label>
+                    <input type="text" id="nomeLoja" name="nomeLoja">
+                </div>
+                <div class="form-group">
+                    <label for="slogan">Slogan</label>
+                    <input type="text" id="slogan" name="slogan">
+                </div>
+                <div class="form-group">
+                    <label for="whatsapp">WhatsApp da Loja</label>
+                    <input type="text" id="whatsapp" name="whatsapp">
+                </div>
+                <div class="form-group">
+                    <label for="chavePix">Chave PIX da Loja</label>
+                    <input type="text" id="chavePix" name="chavePix">
+                </div>
+                <div class="form-group">
+                    <label for="logoUrl">Logo (URL)</label>
+                    <input type="url" id="logoUrl" name="logoUrl">
+                </div>
+                <div class="form-group">
+                    <label for="fundoUrl">Fundo (URL ou Cor)</label>
+                    <input type="text" id="fundoUrl" name="fundoUrl">
+                </div>
+                <div class="form-group">
+                    <label for="corPrimaria">Cor Primária</label>
+                    <input type="color" id="corPrimaria" name="corPrimaria" value="#ff4500">
+                </div>
+                <div class="form-group">
+                    <label for="corSecundaria">Cor Secundária</label>
+                    <input type="color" id="corSecundaria" name="corSecundaria" value="#6c757d">
+                </div>
+                <div class="form-group">
+                    <label for="horarioFuncionamento">Horário de Funcionamento</label>
+                    <textarea id="horarioFuncionamento" name="horarioFuncionamento" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="formasPagamento">Formas de Pagamento Aceitas</label>
+                    <textarea id="formasPagamento" name="formasPagamento" rows="3" placeholder="Ex: Cartão, Dinheiro, PIX"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="sobreLoja">Sobre a Loja</label>
+                    <textarea id="sobreLoja" name="sobreLoja" rows="5"></textarea>
+                </div>
+            </form>
+        </div>
+        
+        <div class="section" id="admin-profile-section">
+            <h2>Perfil do Administrador</h2>
+            <form id="admin-profile-form">
+                <div class="form-group">
+                    <label for="adminNome">Nome Completo</label>
+                    <input type="text" id="adminNome" name="adminNome">
+                </div>
+                <div class="form-group">
+                    <label for="adminEmail">E-mail</label>
+                    <input type="email" id="adminEmail" name="adminEmail">
+                </div>
+                <div class="form-group">
+                    <label for="adminFoto">URL da Foto de Perfil</label>
+                    <input type="url" id="adminFoto" name="adminFoto">
+                </div>
+                <div class="form-group">
+                    <label for="biografia">Biografia</label>
+                    <textarea id="biografia" name="biografia" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+
+        <div class="section" id="info-comercial-section">
+            <h2>Informações Comerciais</h2>
+            <form id="info-comercial-form">
+                <div class="form-group">
+                    <label for="cnpjCpf">CNPJ ou CPF</label>
+                    <input type="text" id="cnpjCpf" name="cnpjCpf">
+                </div>
+                <div class="form-group">
+                    <label for="uf">Endereço: UF</label>
+                    <input type="text" id="uf" name="uf">
+                </div>
+                <div class="form-group">
+                    <label for="cidade">Endereço: Cidade</label>
+                    <input type="text" id="cidade" name="cidade">
+                </div>
+                <div class="form-group">
+                    <label for="bairro">Endereço: Bairro</label>
+                    <input type="text" id="bairro" name="bairro">
+                </div>
+                <div class="form-group">
+                    <label for="siteExterno">Site Externo (URL)</label>
+                    <input type="url" id="siteExterno" name="siteExterno">
+                </div>
+                <div class="form-group">
+                    <label for="instagramUrl">Instagram (URL)</label>
+                    <input type="url" id="instagramUrl" name="instagramUrl">
+                </div>
+                <div class="form-group">
+                    <label for="facebookUrl">Facebook (URL)</label>
+                    <input type="url" id="facebookUrl" name="facebookUrl">
+                </div>
+                <div class="form-group">
+                    <label for="tiktokUrl">TikTok (URL)</label>
+                    <input type="url" id="tiktokUrl" name="tiktokUrl">
+                </div>
+            </form>
+        </div>
+
+        <div class="section" id="personalizacao-avancada-section">
+            <h2>Personalização Avançada</h2>
+            <form id="personalizacao-avancada-form">
+                <div class="form-group">
+                    <label for="fonteSite">Fonte do Site</label>
+                    <select id="fonteSite" name="fonteSite">
+                        <option value="Arial">Arial</option>
+                        <option value="Roboto">Roboto</option>
+                        <option value="Open Sans">Open Sans</option>
+                        <option value="Montserrat">Montserrat</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="layoutCardapio">Layout do Cardápio</label>
+                    <select id="layoutCardapio" name="layoutCardapio">
+                        <option value="grade">Grade</option>
+                        <option value="lista">Lista</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="estiloBotoes">Estilo dos Botões</label>
+                    <select id="estiloBotoes" name="estiloBotoes">
+                        <option value="arredondado">Arredondado</option>
+                        <option value="quadrado">Quadrado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="iconeCarrinho">Ícone do Carrinho (URL)</label>
+                    <input type="url" id="iconeCarrinho" name="iconeCarrinho">
+                </div>
+                <h3>Cores do Cardápio</h3>
+                <div class="form-group">
+                    <label for="corFundoCardapio">Cor de Fundo do Cardapio</label>
+                    <input type="color" id="corFundoCardapio" name="corFundoCardapio" value="#ffffff">
+                </div>
+                <div class="form-group">
+                    <label for="corTextoCardapio">Cor do Texto do Cardapio</label>
+                    <input type="color" id="corTextoCardapio" name="corTextoCardapio" value="#333333">
+                </div>
+                <div class="form-group">
+                    <label for="corPrecoCardapio">Cor do Preço</label>
+                    <input type="color" id="corPrecoCardapio" name="corPrecoCardapio" value="#ff4500">
+                </div>
+                <h3>Estilo da Fonte</h3>
+                <div class="form-group">
+                    <label for="tamanhoFonte">Tamanho da Fonte (px)</label>
+                    <input type="number" id="tamanhoFonte" name="tamanhoFonte" value="16" min="10" max="24">
+                </div>
+            </form>
+        </div>
+
+        <div class="section" id="area-cobertura-section">
+            <h2>Áreas de Cobertura</h2>
+            <div id="areas-list">
+            </div>
+            <button type="button" id="add-area" class="btn">Adicionar Área de Entrega</button>
+        </div>
+        
+        <div class="section" id="cardapio-section">
+            <h2>Cardápio</h2>
+            <h3>Categorias</h3>
+            <div id="categorias-list">
+            </div>
+            <button type="button" id="add-categoria" class="btn">Adicionar Categoria</button>
+            
+            <h3>Produtos</h3>
+            <div id="produtos-list">
+            </div>
+            <button type="button" id="add-produto" class="btn">Adicionar Produto</button>
+        </div>
+        
+        <div class="section" id="publish-section">
+            <h2>Publicar</h2>
+            <p>Clique no botão abaixo para salvar e atualizar seu cardápio online.</p>
+            <button type="button" id="publish-btn" class="btn">Salvar Alterações</button>
+        </div>
+        
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const loginScreen = document.getElementById('login-screen');
+            const adminPanel = document.getElementById('admin-panel');
+            const publishBtn = document.getElementById('publish-btn');
+            const produtosList = document.getElementById('produtos-list');
+            const addProdutoBtn = document.getElementById('add-produto');
+            const areasList = document.getElementById('areas-list');
+            const addAreaBtn = document.getElementById('add-area');
+            const categoriasList = document.getElementById('categorias-list');
+            const addCategoriaBtn = document.getElementById('add-categoria');
+
+            // CHAVES DE ACESSO - SUBSTITUA PELAS SUAS NOVAS CHAVES
+            const BIN_ID = 'SUA-NOVA-BIN_ID-AQUI';
+            const MASTER_KEY = 'SUA-NOVA-MASTER_KEY-AQUI';
+
+            // ARRAYS QUE ARMAZENAM OS DADOS DO PAINEL (FONTE DA VERDADE)
+            let products = [];
+            let deliveryAreas = [];
+            let categories = [];
+
+            // --- FUNÇÃO PARA CARREGAR OS DADOS DO SERVIDOR E POPULAR OS CAMPOS ---
+            const loadDataAndPopulateForms = async () => {
+                try {
+                    const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                        headers: {
+                            'X-Master-Key': MASTER_KEY
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`Erro ao carregar dados: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    const record = data.record;
+                    
+                    document.getElementById('nomeLoja').value = record.loja.nome || '';
+                    document.getElementById('slogan').value = record.loja.slogan || '';
+                    document.getElementById('whatsapp').value = record.loja.whatsapp || '';
+                    document.getElementById('chavePix').value = record.loja.chavePix || '';
+                    document.getElementById('logoUrl').value = record.loja.logo || '';
+                    document.getElementById('fundoUrl').value = record.loja.fundo || '';
+                    document.getElementById('corPrimaria').value = record.loja.cores.primaria || '#ff4500';
+                    document.getElementById('corSecundaria').value = record.loja.cores.secundaria || '#6c757d';
+                    document.getElementById('horarioFuncionamento').value = record.loja.horario || '';
+                    document.getElementById('formasPagamento').value = (record.loja.formasPagamento || []).join('\n');
+                    document.getElementById('sobreLoja').value = record.loja.sobreLoja || '';
+
+                    document.getElementById('adminNome').value = record.admin.nome || '';
+                    document.getElementById('adminEmail').value = record.admin.email || '';
+                    document.getElementById('adminFoto').value = record.admin.foto || '';
+                    document.getElementById('biografia').value = record.admin.biografia || '';
+
+                    document.getElementById('cnpjCpf').value = record.infoComercial.cnpjCpf || '';
+                    document.getElementById('uf').value = record.infoComercial.endereco.uf || '';
+                    document.getElementById('cidade').value = record.infoComercial.endereco.cidade || '';
+                    document.getElementById('bairro').value = record.infoComercial.endereco.bairro || '';
+                    document.getElementById('siteExterno').value = record.infoComercial.siteExterno || '';
+                    document.getElementById('instagramUrl').value = record.infoComercial.redesSociais.instagram || '';
+                    document.getElementById('facebookUrl').value = record.infoComercial.redesSociais.facebook || '';
+                    document.getElementById('tiktokUrl').value = record.infoComercial.redesSociais.tiktok || '';
+                    
+                    document.getElementById('fonteSite').value = record.personalizacao.fonteSite || 'Arial';
+                    document.getElementById('layoutCardapio').value = record.personalizacao.layoutCardapio || 'grade';
+                    document.getElementById('estiloBotoes').value = record.personalizacao.estiloBotoes || 'arredondado';
+                    document.getElementById('iconeCarrinho').value = record.personalizacao.iconeCarrinho || '';
+                    document.getElementById('corFundoCardapio').value = record.personalizacao.cores.fundoCardapio || '#ffffff';
+                    document.getElementById('corTextoCardapio').value = record.personalizacao.cores.textoCardapio || '#333333';
+                    document.getElementById('corPrecoCardapio').value = record.personalizacao.cores.precoCardapio || '#ff4500';
+                    document.getElementById('tamanhoFonte').value = record.personalizacao.estiloFonte.tamanhoFonte || '16';
+
+                    products = record.cardapio.produtos || [];
+                    deliveryAreas = record.cardapio.areasEntrega || [];
+                    categories = record.cardapio.categorias || [];
+
+                    renderCategories();
+                    renderProducts();
+                    renderDeliveryAreas();
+
+                } catch (error) {
+                    console.error('Falha ao carregar os dados salvos:', error);
+                    alert('Não foi possível carregar os dados salvos. Comece com um formulário vazio.');
+                }
+            };
+            
+            // --- FUNÇÕES DE RENDERIZAÇÃO DE LISTAS DINÂMICAS ---
+            const renderCategories = () => {
+                categoriasList.innerHTML = '';
+                categories.forEach((category, index) => {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.classList.add('category-item');
+                    
+                    categoryDiv.innerHTML = `
+                        <input type="text" class="categoria-nome" value="${category}" data-index="${index}" required>
+                        <button type="button" class="btn btn-remove" data-index="${index}">Remover</button>
+                    `;
+                    
+                    categoriasList.appendChild(categoryDiv);
+                });
+                attachCategoryEventListeners();
+                renderProducts(); // Atualiza a lista de produtos para refletir as novas categorias
+            };
+
+            const renderProducts = () => {
+                produtosList.innerHTML = '';
+                products.forEach((product, index) => {
+                    const produtoDiv = document.createElement('div');
+                    produtoDiv.classList.add('product-item');
+                    
+                    const categoryOptions = categories.map(cat => 
+                        `<option value="${cat}" ${product.categoria === cat ? 'selected' : ''}>${cat}</option>`
+                    ).join('');
+
+                    produtoDiv.innerHTML = `
+                        <div>
+                            <h4>${product.nome || 'Novo Produto'}</h4>
+                            <div class="form-group">
+                                <label>Nome</label>
+                                <input type="text" class="produto-nome" value="${product.nome || ''}" data-index="${index}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Descrição</label>
+                                <input type="text" class="produto-descricao" value="${product.descricao || ''}" data-index="${index}">
+                            </div>
+                            <div class="form-group">
+                                <label>Preço</label>
+                                <input type="number" class="produto-preco" step="0.01" value="${product.preco || ''}" data-index="${index}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>URL da Imagem</label>
+                                <input type="url" class="produto-imagem" value="${product.imagem || ''}" data-index="${index}">
+                            </div>
+                            <div class="form-group">
+                                <label>Categoria</label>
+                                <select class="produto-categoria" data-index="${index}">
+                                    ${categoryOptions}
+                                </select>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-remove" data-index="${index}">Remover Produto</button>
+                    `;
+                    
+                    produtosList.appendChild(produtoDiv);
+                });
+                attachProductEventListeners();
+            };
+
+            const renderDeliveryAreas = () => {
+                areasList.innerHTML = '';
+                deliveryAreas.forEach((area, index) => {
+                    const areaDiv = document.createElement('div');
+                    areaDiv.classList.add('area-item');
+
+                    areaDiv.innerHTML = `
+                        <div>
+                            <h4>${area.bairro || 'Nova Área de Entrega'}</h4>
+                            <div class="form-group">
+                                <label>Bairro</label>
+                                <input type="text" class="area-bairro" value="${area.bairro || ''}" data-index="${index}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Preço (R$)</label>
+                                <input type="number" class="area-preco" step="0.01" value="${area.preco || ''}" data-index="${index}" required>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-remove" data-index="${index}">Remover Área</button>
+                    `;
+                    areasList.appendChild(areaDiv);
+                });
+                attachAreaEventListeners();
+            };
+
+            // --- FUNÇÕES DE EVENTOS ---
+            const attachCategoryEventListeners = () => {
+                categoriasList.querySelectorAll('.btn-remove').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.dataset.index;
+                        categories.splice(index, 1);
+                        renderCategories();
+                    });
+                });
+                categoriasList.querySelectorAll('input').forEach(input => {
+                    input.addEventListener('change', (e) => {
+                        const index = e.target.dataset.index;
+                        categories[index] = e.target.value;
+                    });
+                });
+            };
+            
+            const attachProductEventListeners = () => {
+                produtosList.querySelectorAll('.btn-remove').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.dataset.index;
+                        products.splice(index, 1);
+                        renderProducts();
+                    });
+                });
+                produtosList.querySelectorAll('input, select').forEach(input => {
+                    input.addEventListener('change', (e) => {
+                        const index = e.target.dataset.index;
+                        const field = e.target.className.split('-')[1];
+                        if (field === 'preco') {
+                            products[index][field] = parseFloat(e.target.value);
+                        } else {
+                            products[index][field] = e.target.value;
+                        }
+                    });
+                });
+            };
+
+            const attachAreaEventListeners = () => {
+                areasList.querySelectorAll('.btn-remove').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = e.target.dataset.index;
+                        deliveryAreas.splice(index, 1);
+                        renderDeliveryAreas();
+                    });
+                });
+                areasList.querySelectorAll('input').forEach(input => {
+                    input.addEventListener('change', (e) => {
+                        const index = e.target.dataset.index;
+                        const field = e.target.className.split('-')[1];
+                        if (field === 'preco') {
+                            deliveryAreas[index][field] = parseFloat(e.target.value);
+                        } else {
+                            deliveryAreas[index][field] = e.target.value;
+                        }
+                    });
+                });
+            };
+            
+            // --- LÓGICA DE ADICIONAR NOVOS ITENS ---
+            addCategoriaBtn.addEventListener('click', () => {
+                categories.push('Nova Categoria');
+                renderCategories();
+            });
+            addProdutoBtn.addEventListener('click', () => {
+                products.push({ nome: '', descricao: '', preco: 0, imagem: '', categoria: categories[0] || 'Sem Categoria' });
+                renderProducts();
+            });
+            addAreaBtn.addEventListener('click', () => {
+                deliveryAreas.push({ bairro: '', preco: 0 });
+                renderDeliveryAreas();
+            });
+
+            // --- LÓGICA DE LOGIN E PUBLICAÇÃO ---
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                if (username === 'Pizzaria' && password === '1234') {
+                    loginScreen.classList.add('hidden');
+                    adminPanel.classList.remove('hidden');
+                    loadDataAndPopulateForms();
+                } else {
+                    alert('Usuário ou senha incorretos.');
+                }
+            });
+
+            publishBtn.addEventListener('click', () => {
+                const dadosFinais = {};
+                
+                dadosFinais.loja = {
+                    nome: document.getElementById('nomeLoja').value,
+                    slogan: document.getElementById('slogan').value,
+                    logo: document.getElementById('logoUrl').value,
+                    fundo: document.getElementById('fundoUrl').value,
+                    whatsapp: document.getElementById('whatsapp').value,
+                    chavePix: document.getElementById('chavePix').value,
+                    horario: document.getElementById('horarioFuncionamento').value,
+                    formasPagamento: document.getElementById('formasPagamento').value.split('\n').filter(p => p.trim() !== ''),
+                    sobreLoja: document.getElementById('sobreLoja').value,
+                    cores: {
+                        primaria: document.getElementById('corPrimaria').value,
+                        secundaria: document.getElementById('corSecundaria').value
+                    }
+                };
+                
+                dadosFinais.admin = {
+                    nome: document.getElementById('adminNome').value,
+                    email: document.getElementById('adminEmail').value,
+                    foto: document.getElementById('adminFoto').value,
+                    biografia: document.getElementById('biografia').value
+                };
+                
+                dadosFinais.infoComercial = {
+                    cnpjCpf: document.getElementById('cnpjCpf').value,
+                    siteExterno: document.getElementById('siteExterno').value,
+                    endereco: {
+                        uf: document.getElementById('uf').value,
+                        cidade: document.getElementById('cidade').value,
+                        bairro: document.getElementById('bairro').value
+                    },
+                    redesSociais: {
+                        instagram: document.getElementById('instagramUrl').value,
+                        facebook: document.getElementById('facebookUrl').value,
+                        tiktok: document.getElementById('tiktokUrl').value
+                    }
+                };
+
+                dadosFinais.personalizacao = {
+                    fonteSite: document.getElementById('fonteSite').value,
+                    layoutCardapio: document.getElementById('layoutCardapio').value,
+                    estiloBotoes: document.getElementById('estiloBotoes').value,
+                    iconeCarrinho: document.getElementById('iconeCarrinho').value,
+                    cores: {
+                        fundoCardapio: document.getElementById('corFundoCardapio').value,
+                        textoCardapio: document.getElementById('corTextoCardapio').value,
+                        precoCardapio: document.getElementById('corPrecoCardapio').value
+                    },
+                    estiloFonte: {
+                        tamanhoFonte: document.getElementById('tamanhoFonte').value
+                    }
+                };
+
+                dadosFinais.cardapio = {
+                    categorias: categories,
+                    produtos: products,
+                    areasEntrega: deliveryAreas
+                };
+                
+                const url = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+                
+                fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': MASTER_KEY
+                    },
+                    body: JSON.stringify(dadosFinais, null, 2)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(error => {
+                            throw new Error(`Erro na API: ${error.message}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('Dados da loja salvos com sucesso!');
+                    console.log('Salvo com sucesso:', data);
+                })
+                .catch(error => {
+                    alert(`Falha ao salvar os dados: ${error.message}.`);
+                    console.error('Erro:', error);
+                });
+            });
+        });
+    </script>
+</body>
+                      </html>
