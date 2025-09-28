@@ -438,13 +438,24 @@
 
             // --- Lógica de Carregamento de Dados e Produtos
             const loadStoreData = async () => {
+                // --- CÓDIGO ATUALIZADO PARA USAR O JSONBIN.IO ---
+                const BIN_ID = '68d8ce23d0ea881f408d814b';
+                const MASTER_KEY = '$2a$10$tjnnaauKPcx3meNHOAbLnefskEWrEHoUCjB1Q0A2WdjUodgzxGpJG';
+
                 try {
-                    const response = await fetch('dados-loja.json');
+                    const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                        headers: {
+                            'X-Master-Key': MASTER_KEY
+                        }
+                    });
+                    
                     if (!response.ok) {
                         throw new Error(`Erro ao carregar dados: ${response.statusText}`);
                     }
-                    storeData = await response.json();
                     
+                    const data = await response.json();
+                    storeData = data.record; // O JSONbin.io retorna o objeto em "record"
+
                     applyStoreStyles();
                     renderStoreInfo();
                     renderProducts();
@@ -452,8 +463,8 @@
                     renderPaymentOptions();
 
                 } catch (error) {
-                    console.error('Falha ao carregar o arquivo dados-loja.json', error);
-                    productList.innerHTML = `<p style="text-align:center;">Não foi possível carregar os produtos. Verifique se o arquivo dados-loja.json existe e está correto.</p>`;
+                    console.error('Falha ao carregar os dados da loja:', error);
+                    productList.innerHTML = `<p style="text-align:center;">Não foi possível carregar os produtos. Por favor, tente novamente mais tarde.</p>`;
                 }
             };
 
