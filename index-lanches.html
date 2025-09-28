@@ -442,7 +442,9 @@
 
             const showView = (viewName) => {
                 Object.values(views).forEach(view => view.classList.add('hidden'));
-                views[viewName].classList.remove('hidden');
+                if (views[viewName]) {
+                    views[viewName].classList.remove('hidden');
+                }
             };
 
             cartButton.addEventListener('click', () => {
@@ -465,7 +467,6 @@
                 if (cart.length > 0) {
                     showView('checkoutType');
                 } else {
-                    // Substituído por uma notificação mais amigável
                     showCustomNotification('Carrinho Vazio', 'Adicione produtos para continuar!');
                 }
             });
@@ -478,8 +479,10 @@
                 showView('deliveryForm');
                 updateDeliveryFee();
             });
+
+            // --- CORREÇÃO APLICADA AQUI ---
             document.getElementById('pickup-option').addEventListener('click', () => {
-                showView('pickup-form-view');
+                showView('pickupForm');
                 updateFinalTotalPickup();
             });
 
@@ -500,7 +503,7 @@
                     }
                     
                     const data = await response.json();
-                    storeData = data.record; // O JSONbin.io retorna o objeto em "record"
+                    storeData = data.record;
 
                     applyStoreStyles();
                     renderStoreInfo();
@@ -603,8 +606,7 @@
                             trocoField.classList.remove('hidden');
                         } else if (e.target.value.toLowerCase().includes('pix')) {
                             pixField.classList.remove('hidden');
-                            // A chave pix deve ser definida no admin.json
-                            pixInput.value = 'chave_pix_da_loja';
+                            pixInput.value = storeData.loja.chavePix;
                         }
                     });
                 });
@@ -824,4 +826,4 @@
         });
     </script>
 </body>
-              </html>
+</html>
