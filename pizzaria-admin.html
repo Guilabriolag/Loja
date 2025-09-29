@@ -150,6 +150,7 @@
             margin-bottom: 5px;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
 </head>
 <body>
 
@@ -374,8 +375,11 @@
             const addCategoriaBtn = document.getElementById('add-categoria');
 
             // CHAVES DE ACESSO - SUBSTITUA PELAS SUAS NOVAS CHAVES
-            const BIN_ID = 'SUA-NOVA-BIN_ID-AQUI';
+            const BIN_ID = '68d9fa4743b1c97be9539c56';
             const MASTER_KEY = 'SUA-NOVA-MASTER_KEY-AQUI';
+
+            // NOVO HASH PARA A SENHA '1234'
+            const HASHED_PASSWORD = '$2a$10$tjnnaauKPcx3meNHOAbLnefskEWrEHoUCjB1Q0A2WdjUodgzxGpJG';
 
             // ARRAYS QUE ARMAZENAM OS DADOS DO PAINEL (FONTE DA VERDADE)
             let products = [];
@@ -608,15 +612,22 @@
             });
 
             // --- LÓGICA DE LOGIN E PUBLICAÇÃO ---
-            loginForm.addEventListener('submit', (e) => {
+            loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
 
-                if (username === 'Pizzaria' && password === '1234') {
-                    loginScreen.classList.add('hidden');
-                    adminPanel.classList.remove('hidden');
-                    loadDataAndPopulateForms();
+                if (username === 'Pizzaria') {
+                    // Compara a senha digitada com a senha criptografada
+                    const passwordMatch = await bcrypt.compare(password, HASHED_PASSWORD);
+
+                    if (passwordMatch) {
+                        loginScreen.classList.add('hidden');
+                        adminPanel.classList.remove('hidden');
+                        loadDataAndPopulateForms();
+                    } else {
+                        alert('Usuário ou senha incorretos.');
+                    }
                 } else {
                     alert('Usuário ou senha incorretos.');
                 }
@@ -714,4 +725,4 @@
         });
     </script>
 </body>
-</html>
+                        </html>
